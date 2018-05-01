@@ -2107,7 +2107,6 @@ function Auxiliary.ExceptThisCard(e)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then return c else return nil end
 end
-
 --Utilities to be added to the core 2
 function Card.IsInMainMZone(c,tp)
 	return c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 and (not tp or c:IsControler(tp))
