@@ -45,7 +45,7 @@ function Auxiliary.Stringid(code,id)
 end
 function Auxiliary.Next(g)
 	local first=true
-	return  function()
+	return	function()
 				if first then first=false return g:GetFirst()
 				else return g:GetNext() end
 			end
@@ -60,7 +60,7 @@ function Auxiliary.FALSE()
 end
 function Auxiliary.AND(...)
 	local function_list={...}
-	return  function(...)
+	return	function(...)
 				local res=false
 				for i,f in ipairs(function_list) do
 					res=f(...)
@@ -71,7 +71,7 @@ function Auxiliary.AND(...)
 end
 function Auxiliary.OR(...)
 	local function_list={...}
-	return  function(...)
+	return	function(...)
 				local res=false
 				for i,f in ipairs(function_list) do
 					res=f(...)
@@ -81,7 +81,7 @@ function Auxiliary.OR(...)
 			end
 end
 function Auxiliary.NOT(f)
-	return  function(...)
+	return	function(...)
 				return not f(...)
 			end
 end
@@ -211,19 +211,19 @@ function Auxiliary.CheckUnionEquip(uc,tc)
 end
 function Auxiliary.TargetEqualFunction(f,value,...)
 	local ext_params={...}
-	return  function(effect,target)
+	return	function(effect,target)
 				return f(target,table.unpack(ext_params))==value
 			end
 end
 function Auxiliary.TargetBoolFunction(f,...)
 	local ext_params={...}
-	return  function(effect,target)
+	return	function(effect,target)
 				return f(target,table.unpack(ext_params))
 			end
 end
 function Auxiliary.FilterEqualFunction(f,value,...)
 	local ext_params={...}
-	return  function(target)
+	return	function(target)
 				return f(target,table.unpack(ext_params))==value
 			end
 end
@@ -235,19 +235,19 @@ function Auxiliary.FilterBoolFunctionEx(f,value)
 end
 function Auxiliary.FilterBoolFunction(f,...)
 	local ext_params={...}
-	return  function(target)
+	return	function(target)
 				return f(target,table.unpack(ext_params))
 			end
 end
 function Auxiliary.Tuner(f,...)
 	local ext_params={...}
-	return  function(target)
+	return	function(target)
 				return target:IsType(TYPE_TUNER) and (not f or f(target,table.unpack(ext_params)))
 			end
 end
 function Auxiliary.NonTuner(f,...)
 	local ext_params={...}
-	return  function(target)
+	return	function(target)
 				return target:IsNotTuner() and (not f or f(target,table.unpack(ext_params)))
 			end
 end
@@ -298,7 +298,7 @@ function Auxiliary.AddSynchroProcedure(c,f1,f2,minc,maxc)
 	c:RegisterEffect(e1)
 end
 function Auxiliary.SynCondition(f1,f2,minc,maxc)
-	return  function(e,c,smat,mg)
+	return	function(e,c,smat,mg)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
@@ -307,7 +307,7 @@ function Auxiliary.SynCondition(f1,f2,minc,maxc)
 			end
 end
 function Auxiliary.SynTarget(f1,f2,minc,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg)
 				local g=nil
 				if smat and smat:IsType(TYPE_TUNER) and (not f1 or f1(smat)) then
 					g=Duel.SelectTunerMaterial(c:GetControler(),c,smat,f1,f2,minc,maxc,mg)
@@ -322,7 +322,7 @@ function Auxiliary.SynTarget(f1,f2,minc,maxc)
 			end
 end
 function Auxiliary.SynOperation(f1,f2,minct,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
 				local g=e:GetLabelObject()
 				c:SetMaterial(g)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
@@ -366,7 +366,7 @@ function Auxiliary.GetSynMaterials(tp,syncard)
 	return mg
 end
 function Auxiliary.SynMixCondition(f1,f2,f3,f4,minc,maxc)
-	return  function(e,c,smat,mg1)
+	return	function(e,c,smat,mg1)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -381,7 +381,7 @@ function Auxiliary.SynMixCondition(f1,f2,f3,f4,minc,maxc)
 			end
 end
 function Auxiliary.SynMixTarget(f1,f2,f3,f4,minc,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1)
 				local g=Group.CreateGroup()
 				local mg
 				if mg1 then
@@ -429,11 +429,8 @@ function Auxiliary.SynMixTarget(f1,f2,f3,f4,minc,maxc)
 			end
 end
 function Auxiliary.SynMixOperation(f1,f2,f3,f4,minct,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
 				local g=e:GetLabelObject()
-				if not g:IsExists(Card.IsType,1,nil,TYPE_TUNER) and c:IsHasEffect(80896940) then
-					c:RegisterFlagEffect(80896940,RESET_EVENT+0x1fe0000,0,1)
-				end
 				c:SetMaterial(g)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
 				g:DeleteGroup()
@@ -542,6 +539,9 @@ end
 function Auxiliary.XyzAlterFilter(c,alterf,xyzc,e,tp,op)
 	return alterf(c) and c:IsCanBeXyzMaterial(xyzc) and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0 and (not op or op(e,tp,0,c))
 end
+function Auxiliary.CanPlayerXyzSummonCardWithoutMaterial(tp)
+	return Duel.IsPlayerAffectedByEffect(tp,67120578)==nil and Auxiliary.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_XMATERIAL)
+end
 --Xyz monster, lv k*n
 function Auxiliary.AddXyzProcedure(c,f,lv,ct,alterf,desc,maxct,op)
 	local e1=Effect.CreateEffect(c)
@@ -566,7 +566,7 @@ end
 --Xyz Summon(normal)
 function Auxiliary.XyzCondition(f,lv,minc,maxc)
 	--og: use special material
-	return  function(e,c,og,min,max)
+	return	function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -583,7 +583,7 @@ function Auxiliary.XyzCondition(f,lv,minc,maxc)
 			end
 end
 function Auxiliary.XyzTarget(f,lv,minc,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -602,7 +602,7 @@ function Auxiliary.XyzTarget(f,lv,minc,maxc)
 			end
 end
 function Auxiliary.XyzOperation(f,lv,minc,maxc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -632,7 +632,7 @@ function Auxiliary.XyzOperation(f,lv,minc,maxc)
 end
 --Xyz summon(alterf)
 function Auxiliary.XyzCondition2(f,lv,minc,maxc,alterf,desc,op)
-	return  function(e,c,og,min,max)
+	return	function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -658,7 +658,7 @@ function Auxiliary.XyzCondition2(f,lv,minc,maxc,alterf,desc,op)
 			end
 end
 function Auxiliary.XyzTarget2(f,lv,minc,maxc,alterf,desc,op)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -696,7 +696,7 @@ function Auxiliary.XyzTarget2(f,lv,minc,maxc,alterf,desc,op)
 			end
 end
 function Auxiliary.XyzOperation2(f,lv,minc,maxc,alterf,desc,op)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -767,7 +767,7 @@ function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
 	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
 end
 function Auxiliary.XyzLevelFreeCondition(f,gf,minct,maxct)
-	return  function(e,c,og,min,max)
+	return	function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -793,7 +793,7 @@ function Auxiliary.XyzLevelFreeCondition(f,gf,minct,maxct)
 			end
 end
 function Auxiliary.XyzLevelFreeTarget(f,gf,minct,maxct)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -835,7 +835,7 @@ function Auxiliary.XyzLevelFreeTarget(f,gf,minct,maxct)
 			end
 end
 function Auxiliary.XyzLevelFreeOperation(f,gf,minct,maxct)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -872,7 +872,7 @@ function Auxiliary.XyzLevelFreeOperation(f,gf,minct,maxct)
 end
 --Xyz summon(level free&alterf)
 function Auxiliary.XyzLevelFreeCondition2(f,gf,minct,maxct,alterf,desc,op)
-	return  function(e,c,og,min,max)
+	return	function(e,c,og,min,max)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -903,7 +903,7 @@ function Auxiliary.XyzLevelFreeCondition2(f,gf,minct,maxct,alterf,desc,op)
 			end
 end
 function Auxiliary.XyzLevelFreeTarget2(f,gf,minct,maxct,alterf,desc,op)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 				if og and not min then
 					return true
 				end
@@ -960,7 +960,7 @@ function Auxiliary.XyzLevelFreeTarget2(f,gf,minct,maxct,alterf,desc,op)
 			end
 end
 function Auxiliary.XyzLevelFreeOperation2(f,gf,minct,maxct,alterf,desc,op)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -1039,7 +1039,7 @@ function Auxiliary.FConditionMix(insf,sub,...)
 	--gc:Material already used
 	--chkf: check field, default:PLAYER_NONE
 	local funs={...}
-	return  function(e,g,gc,chkfnf)
+	return	function(e,g,gc,chkfnf)
 				if g==nil then return insf and Auxiliary.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
 				local chkf=chkfnf&0xff
 				local c=e:GetHandler()
@@ -1058,7 +1058,7 @@ function Auxiliary.FConditionMix(insf,sub,...)
 end
 function Auxiliary.FOperationMix(insf,sub,...)
 	local funs={...}
-	return  function(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
+	return	function(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
 				local chkf=chkfnf&0xff
 				local c=e:GetHandler()
 				local tp=c:GetControler()
@@ -1147,7 +1147,7 @@ function Auxiliary.AddFusionProcMixRep(c,sub,insf,fun1,minc,maxc,...)
 end
 function Auxiliary.FConditionMixRep(insf,sub,fun1,minc,maxc,...)
 	local funs={...}
-	return  function(e,g,gc,chkfnf)
+	return	function(e,g,gc,chkfnf)
 				if g==nil then return insf and Auxiliary.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
 				local chkf=chkfnf&0xff
 				local c=e:GetHandler()
@@ -1166,7 +1166,7 @@ function Auxiliary.FConditionMixRep(insf,sub,fun1,minc,maxc,...)
 end
 function Auxiliary.FOperationMixRep(insf,sub,fun1,minc,maxc,...)
 	local funs={...}
-	return  function(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
+	return	function(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
 				local chkf=chkfnf&0xff
 				local c=e:GetHandler()
 				local tp=c:GetControler()
@@ -1404,7 +1404,7 @@ function Auxiliary.FShaddollSpFilter2(c,tp,mc,attr)
 		and Duel.GetLocationCountFromEx(tp,tp,sg)>0
 end
 function Auxiliary.FShaddollCondition(attr)
-	return  function(e,g,gc,chkf)
+	return 	function(e,g,gc,chkf)
 				if g==nil then return Auxiliary.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
 				local c=e:GetHandler()
 				local mg=g:Filter(Auxiliary.FShaddollFilter,nil,c,attr)
@@ -1422,7 +1422,7 @@ function Auxiliary.FShaddollCondition(attr)
 			end
 end
 function Auxiliary.FShaddollOperation(attr)
-	return  function(e,tp,eg,ep,ev,re,r,rp,gc,chkf)
+	return	function(e,tp,eg,ep,ev,re,r,rp,gc,chkf)
 				local c=e:GetHandler()
 				local mg=eg:Filter(Auxiliary.FShaddollFilter,nil,c,attr)
 				local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
@@ -1479,7 +1479,7 @@ function Auxiliary.RPGFilterF(c,tp,mg,rc)
 	else return false end
 end
 function Auxiliary.RPGTarget(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then
 					local mg=Duel.GetRitualMaterial(tp)
 					local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -1489,7 +1489,7 @@ function Auxiliary.RPGTarget(filter)
 			end
 end
 function Auxiliary.RPGOperation(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
 				local mg=Duel.GetRitualMaterial(tp)
 				local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -1551,7 +1551,7 @@ function Auxiliary.RPEFilterF(c,tp,mg,rc)
 	else return false end
 end
 function Auxiliary.RPETarget(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then
 					local mg=Duel.GetRitualMaterial(tp)
 					local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -1561,7 +1561,7 @@ function Auxiliary.RPETarget(filter)
 			end
 end
 function Auxiliary.RPEOperation(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
 				local mg=Duel.GetRitualMaterial(tp)
 				local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -1623,7 +1623,7 @@ function Auxiliary.RPEFilter2F(c,tp,mg,rc)
 	else return false end
 end
 function Auxiliary.RPETarget2(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then
 					local mg=Duel.GetRitualMaterial(tp)
 					local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -1633,7 +1633,7 @@ function Auxiliary.RPETarget2(filter)
 			end
 end
 function Auxiliary.RPEOperation2(filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
 				local mg=Duel.GetRitualMaterial(tp)
 				local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -1713,7 +1713,7 @@ function Auxiliary.PConditionFilter(c,e,tp,lscale,rscale)
 		and not c:IsForbidden()
 end
 function Auxiliary.PendCondition()
-	return  function(e,c,og)
+	return	function(e,c,og)
 				if c==nil then return true end
 				local tp=c:GetControler()
 				local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
@@ -1735,7 +1735,7 @@ function Auxiliary.PendCondition()
 			end
 end
 function Auxiliary.PendOperation()
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 				local lscale=c:GetLeftScale()
 				local rscale=rpz:GetRightScale()
@@ -1859,7 +1859,7 @@ function Auxiliary.LCheckGoal(tp,sg,lc,minc,ct,gf)
 	return ct>=minc and sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),ct,ct) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg))
 end
 function Auxiliary.LinkCondition(f,minc,maxc,gf)
-	return  function(e,c)
+	return	function(e,c)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
@@ -1873,7 +1873,7 @@ function Auxiliary.LinkCondition(f,minc,maxc,gf)
 			end
 end
 function Auxiliary.LinkTarget(f,minc,maxc,gf)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c)
 				local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,c)
 				local bg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
 				if #bg>0 then
@@ -1910,7 +1910,7 @@ function Auxiliary.LinkTarget(f,minc,maxc,gf)
 			end
 end
 function Auxiliary.LinkOperation(f,min,max,gf)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
+	return	function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
 				local g=e:GetLabelObject()
 				c:SetMaterial(g)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
@@ -2093,7 +2093,7 @@ function Auxiliary.evospcon(e,tp,eg,ep,ev,re,r,rp)
 end
 --filter for necro_valley test
 function Auxiliary.NecroValleyFilter(f)
-	return  function(target,...)
+	return	function(target,...)
 				return f(target,...) and not (target:IsHasEffect(EFFECT_NECRO_VALLEY) and Duel.IsChainDisablable(0))
 			end
 end
