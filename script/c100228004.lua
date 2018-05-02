@@ -74,29 +74,24 @@ function c100228004.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
-function c100228004.rescon(sg,e,tp,mg)
-	return aux.ChkfMMZ(1)(sg,e,tp,mg) and sg:IsExists(c100228004.atchk1,1,nil,sg)
-end
-function c100228004.atchk1(c,sg)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and sg:FilterCount(Card.IsAttribute,c,ATTRIBUTE_DARK)==1
-end
 function c100228004.spfilter(c,att)
-	return c:IsAttribute(att) and c:IsAbleToRemoveAsCost() and aux.SpElimFilter(c,true)
+	return c:IsAttribute(att) and c:IsAbleToRemoveAsCost()
 end
 function c100228004.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local rg1=Duel.GetMatchingGroup(c100228004.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,ATTRIBUTE_LIGHT)
-	local rg2=Duel.GetMatchingGroup(c100228004.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,ATTRIBUTE_DARK)
-	local rg=rg1:Clone()
-	rg:Merge(rg2)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>-2 and rg1:GetCount()>0 and rg2:GetCount()>0 
-		and aux.SelectUnselectGroup(rg,e,tp,2,2,c100228004.rescon,0)
+	return ((c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or
+		(c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)>0))
+		and Duel.IsExistingMatchingCard(c100228004.spfilter,tp,LOCATION_GRAVE,0,1,nil,ATTRIBUTE_LIGHT)
+		and Duel.IsExistingMatchingCard(c100228004.spfilter,tp,LOCATION_GRAVE,0,1,nil,ATTRIBUTE_DARK)
 end
 function c100228004.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local rg=Duel.GetMatchingGroup(c100228004.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
-	local g=aux.SelectUnselectGroup(rg,e,tp,2,2,c100228004.rescon,1,tp,HINTMSG_REMOVE)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g1=Duel.SelectMatchingCard(tp,c100228004.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_LIGHT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g2=Duel.SelectMatchingCard(tp,c100228004.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,ATTRIBUTE_DARK)
+	g1:Merge(g2)
+	Duel.Remove(g1,POS_FACEUP,REASON_COST)
 end
 function c100228004.gycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -122,9 +117,12 @@ function c100228004.gyop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()==0 or Duel.SendtoGrave(g,REASON_EFFECT)==0 then return end
 	local oc=Duel.GetOperatedGroup():FilterCount(c100228004.sgfilter,nil,tp)
 	if oc==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local og=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,oc,nil)
 	if Duel.SendtoGrave(og,REASON_EFFECT)>0 then
 		local dc=Duel.GetOperatedGroup():FilterCount(c100228004.sgfilter,nil,1-tp)
+		if dc==0 then return end
+		Duel.BreakEffect()
 		Duel.Damage(1-tp,dc*300,REASON_EFFECT)
 	end
 end
