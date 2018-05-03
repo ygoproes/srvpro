@@ -4,10 +4,10 @@
 function c100227002.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DICE+CATEGORY_SUMMON+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DICE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,100227002)
+	e1:SetCountLimit(1,100227002+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(c100227002.cost)
 	e1:SetTarget(c100227002.target)
 	e1:SetOperation(c100227002.activate)
@@ -34,8 +34,6 @@ end
 function c100227002.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c100227002.activate(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.TossDice(tp,1)
