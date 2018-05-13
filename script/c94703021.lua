@@ -18,12 +18,12 @@ function c94703021.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_GRAVE)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetHintTiming(0,TIMING_BATTLE_PHASE)
 	e3:SetCondition(c94703021.tkcon2)
 	e3:SetCost(c94703021.tkcost2)
 	e3:SetTarget(c94703021.tktg2)
-	e3:SetOperation(c94703021.tkop2)
+	e3:SetOperation(c94703021.tkop)
 	c:RegisterEffect(e3)
 end
 function c94703021.tkcon1(e,tp,eg,ep,ev,re,r,rp)
@@ -60,7 +60,7 @@ function c94703021.tktg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c94703021.tkop2(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanSpecialSummonMonster(tp,94703022,0,0x4011,0,0,1,RACE_CYBERSE,ATTRIBUTE_DARK) then return end
-	local ct=math.min(Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_MZONE,nil,TYPE_LINK),(Duel.GetLocationCount(tp,LOCATION_MZONE)))
+	local ct=math.min(Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_MZONE,nil,TYPE_LINK),Duel.GetLocationCount(tp,LOCATION_MZONE))
 	if ct<1 then return end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 	repeat

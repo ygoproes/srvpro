@@ -30,6 +30,8 @@ function c62893810.operation(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 		if g:GetCount()==0 then return end
 		Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
+	elseif d==7 then
+		return
 	else
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 		if g:GetCount()==0 then return end
