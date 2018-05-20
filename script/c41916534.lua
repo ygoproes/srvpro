@@ -67,5 +67,5 @@ function c41916534.atkfilter(c)
 	return c:IsFaceup() and c:IsCode(73405179)
 end
 function c41916534.value(e,c)
-	return Duel.GetMatchingGroupCount(c41916534.filter,c:GetControler(),LOCATION_ONFIELD,0,nil)*1000
+	return Duel.GetMatchingGroupCount(c41916534.atkfilter,c:GetControler(),LOCATION_ONFIELD,0,nil)*1000
 end
