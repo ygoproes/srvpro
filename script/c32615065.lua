@@ -21,10 +21,11 @@ function c32615065.initial_effect(c)
 	--atk up
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(32615065,1))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(c32615065.atkcon2)
+	e2:SetCost(c32615065.atkcost2)
 	e2:SetOperation(c32615065.atkop2)
 	c:RegisterEffect(e2)
 	--spsummon
@@ -63,6 +64,11 @@ function c32615065.atkop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 		tc=g:GetNext()
 	end
+end
+function c32615065.atkcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(32615065)==0 end
+	c:RegisterFlagEffect(32615065,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c32615065.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()

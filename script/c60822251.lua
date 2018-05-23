@@ -92,7 +92,7 @@ function c60822251.fusop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60822251.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_WARRIOR)and c:IsLevelAbove(5) and c:GetAttack()~=c:GetBaseAttack()
+	return c:IsFaceup() and c:IsRace(RACE_WARRIOR)and c:IsLevelAbove(5) and not c:IsAttack(c:GetBaseAttack())
 end
 function c60822251.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0

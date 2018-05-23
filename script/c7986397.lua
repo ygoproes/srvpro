@@ -1,5 +1,5 @@
 --Revendread Evolution
---Scripted by Eerie Code
+--Script by dest
 function c7986397.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -10,94 +10,116 @@ function c7986397.initial_effect(c)
 	e1:SetTarget(c7986397.target)
 	e1:SetOperation(c7986397.activate)
 	c:RegisterEffect(e1)
-	if not AshBlossomTable then AshBlossomTable={} end
-	table.insert(AshBlossomTable,e1)
 end
-function c7986397.filter(c,e,tp,m)
+function c7986397.dfilter(c)
+	return c:IsSetCard(0x106) and c:IsLevelAbove(1) and c:IsAbleToGrave()
+end
+function c7986397.filter(c,e,tp,m,ft)
 	if not c:IsSetCard(0x106) or bit.band(c:GetType(),0x81)~=0x81
 		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 	local mg=m:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if c.mat_filter then
 		mg=mg:Filter(c.mat_filter,nil)
 	end
-	local sg=Group.CreateGroup()
-	return mg:IsExists(c7986397.checkRecursive,1,nil,c,tp,sg,mg)
+	local dg=Duel.GetMatchingGroup(c7986397.dfilter,tp,LOCATION_DECK,0,nil)
+	if ft>0 then
+		return mg:CheckWithSumEqual(Card.GetRitualLevel,c:GetLevel(),1,99,c)
+			or dg:IsExists(c7986397.dlvfilter,1,nil,tp,mg,c,c:GetLevel())
+	else
+		return ft>-1 and mg:IsExists(c7986397.mfilterf,1,nil,tp,mg,dg,c)
+	end
 end
-function c7986397.checkRecursive(c,rc,tp,sg,mg)
-	sg:AddCard(c)
-	local res=sg:GetSum(Card.GetRitualLevel,rc)<=rc:GetLevel() 
-		and (c7986397.checkGoal(tp,sg,rc) or mg:IsExists(c7986397.checkRecursive,1,sg,rc,tp,sg,mg))
-	sg:RemoveCard(c)
-	return res
+function c7986397.mfilterf(c,tp,mg,dg,rc)
+	if c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5 then
+		Duel.SetSelectedCard(c)
+		return mg:CheckWithSumEqual(Card.GetRitualLevel,rc:GetLevel(),0,99,rc)
+			or dg:IsExists(c7986397.dlvfilter,1,nil,tp,mg,rc,rc:GetLevel()-c:GetRitualLevel(rc))
+	else return false end
 end
-function c7986397.checkGoal(tp,sg,rc)
-	return sg:GetSum(Card.GetRitualLevel,rc)==rc:GetLevel() --sg:CheckWithSumEqual(Card.GetRitualLevel,rc:GetLevel(),1,rc:GetLevel(),rc)
-		and sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
-		and aux.ReleaseCheckMMZ(sg,tp)
+function c7986397.dlvfilter(c,tp,mg,rc,lv)
+	local lv2=lv-c:GetRitualLevel(rc)
+	return mg:CheckWithSumEqual(Card.GetRitualLevel,lv2,0,99,rc)
 end
-function c7986397.exfilter0(c)
-	return c:IsSetCard(0x106) and c:IsLevelAbove(1) and c:IsAbleToGrave()
+function c7986397.selcheck(c,mg1,dg,mat1,rc)
+	local mat=mat1:Clone()
+	local mg=mg1:Clone()
+	mat:AddCard(c)
+	if c:IsLocation(LOCATION_DECK) then
+		mg:Sub(dg)
+	end
+	local sum=mat:GetSum(Card.GetRitualLevel,rc)
+	local lv=rc:GetLevel()-sum
+	return rc:IsLevelAbove(sum) and mg:CheckWithSumEqual(Card.GetRitualLevel,lv,0,99,rc)
 end
 function c7986397.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)
-		local sg=Duel.GetMatchingGroup(c7986397.exfilter0,tp,LOCATION_DECK,0,nil)
-		mg:Merge(sg)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return ft>-1 and Duel.IsExistingMatchingCard(c7986397.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,mg)
+		return Duel.IsExistingMatchingCard(c7986397.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,mg,ft)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c7986397.activate(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetRitualMaterial(tp)
-	local sg=Duel.GetMatchingGroup(c7986397.exfilter0,tp,LOCATION_DECK,0,nil)
-	mg:Merge(sg)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c7986397.filter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,mg,ft)
-	local rc=tg:GetFirst()
-	if rc then
-		mg=mg:Filter(Card.IsCanBeRitualMaterial,rc,rc)
-		if rc.mat_filter then
-			mg=mg:Filter(rc.mat_filter,nil)
+	local tc=tg:GetFirst()
+	if tc then
+		local dg=Duel.GetMatchingGroup(c7986397.dfilter,tp,LOCATION_DECK,0,nil)
+		mg:Merge(dg)
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,nil)
 		end
 		local mat=Group.CreateGroup()
-		while true do
-			local cg=mg:Filter(c7986397.checkRecursive,mat,rc,tp,mat,mg)
-			if #cg==0 then break end
-			local tc=Group.SelectUnselect(cg,mat,tp,c7986397.checkGoal(tp,mat,rc),false,1,1)
-			if not tc then break end
-			if not mat:IsContains(tc) then
-				mat=mat+tc
-			else
-				mat=mat-tc
-			end
+		local lv=tc:GetLevel()
+		if ft<=0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local mat2=mg:FilterSelect(tp,c7986397.mfilterf,1,1,nil,tp,mg,dg,tc)
+			lv=lv-mat2:GetFirst():GetRitualLevel(tc)
+			mat:Merge(mat2)
 		end
-		rc:SetMaterial(mat)
-		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_DECK)
-		mat:Sub(mat2)
+		while lv~=0 do
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local tg=mg:FilterSelect(tp,c7986397.selcheck,1,1,nil,mg,dg,mat,tc):GetFirst()
+			mat:AddCard(tg)
+			if tg:IsLocation(LOCATION_DECK) then
+				mg:Sub(dg)
+			else
+				mg:RemoveCard(tg)
+			end
+			lv=lv-tg:GetRitualLevel(tc)
+		end
+		tc:SetMaterial(mat)
+		local mat3=mat:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		if mat3 then
+			mat:Sub(mat3)
+			Duel.SendtoGrave(mat3,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		end
 		Duel.ReleaseRitualMaterial(mat)
-		Duel.SendtoGrave(mat2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
 		Duel.BreakEffect()
-		Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-		rc:CompleteProcedure()
-		rc:RegisterFlagEffect(7986397,RESET_EVENT+0x1fe0000,0,1,0)
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
+		tc:RegisterFlagEffect(7986397,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,2)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetLabel(Duel.GetTurnCount())
-		e1:SetLabelObject(rc)
-		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		e1:SetCondition(c7986397.descon)
 		e1:SetOperation(c7986397.desop)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		e1:SetCountLimit(1)
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetLabelObject(tc)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
 function c7986397.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()>e:GetLabel() and e:GetLabelObject():GetFlagEffect(7986397)~=0
+	local tc=e:GetLabelObject()
+	return Duel.GetTurnCount()~=e:GetLabel() and tc:GetFlagEffect(7986397)~=0
 end
 function c7986397.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetLabelObject(),REASON_EFFECT)
+	local tc=e:GetLabelObject()
+	Duel.Destroy(tc,REASON_EFFECT)
 end

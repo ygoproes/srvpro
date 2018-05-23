@@ -34,7 +34,7 @@ function c33158448.initial_effect(c)
 	c:RegisterEffect(e4)
 	--negate
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(33158448,0))
+	e5:SetDescription(aux.Stringid(33158448,1))
 	e5:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_CHAINING)
@@ -67,11 +67,12 @@ function c33158448.lvop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c33158448.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-		and ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+	local c=e:GetHandler()
+	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
 end
 function c33158448.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsLevelAbove(3) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
@@ -79,11 +80,11 @@ function c33158448.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c33158448.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or c:GetLevel()<3 then return end
+	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or c:IsLevelBelow(2) then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
+	e1:SetReset(RESET_EVENT+0x1ff0000)
 	e1:SetValue(-2)
 	c:RegisterEffect(e1)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then

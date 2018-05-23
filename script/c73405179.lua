@@ -31,8 +31,8 @@ c73405179.card_code_list={72283691}
 function c73405179.filter(c)
 	return c:IsFaceup() and c:IsCode(41916534)
 end
-function c73405179.atkcon(e,tp,eg,ep,ev,re,r,rp,chk)
-	return Duel.IsExistingMatchingCard(c73405179.filter,tp,LOCATION_ONFIELD,0,1,nil)
+function c73405179.atkcon(e)
+	return Duel.IsExistingMatchingCard(c73405179.filter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
 end
 function c73405179.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
