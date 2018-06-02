@@ -1,5 +1,4 @@
 --Kai-Den Kendo Spirit
---Scripted by Eerie Code
 function c71614230.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -15,7 +14,7 @@ function c71614230.initial_effect(c)
 	e1:SetTarget(c71614230.thtg)
 	e1:SetOperation(c71614230.thop)
 	c:RegisterEffect(e1)
-	--gy
+	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -36,23 +35,19 @@ function c71614230.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
 end
-function c71614230.gyfilter(c,tp)
-	return c:GetColumnGroup():IsExists(Card.IsControler,1,nil,1-tp)
+function c71614230.tgfilter(c,tp)
+	return Duel.IsExistingMatchingCard(c71614230.gyfilter,tp,0,LOCATION_ONFIELD,1,nil,c:GetColumnGroup())
+end
+function c71614230.gyfilter(c,g)
+	return g:IsContains(c)
 end
 function c71614230.gytg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71614230.gyfilter,tp,LOCATION_PZONE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71614230.tgfilter,tp,LOCATION_PZONE,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,1-tp,LOCATION_ONFIELD)
 end
 function c71614230.gyop(e,tp,eg,ep,ev,re,r,rp)
-	local pg=Duel.GetMatchingGroup(c71614230.gyfilter,tp,LOCATION_PZONE,0,nil,tp)
-	if #pg==0 then return end
-	local pc=nil
-	if #pg>1 then
-		pc=pg:Select(tp,1,1,nil)
-	else
-		pc=pg:GetFirst()
-	end
-	Duel.HintSelection(1-tp,Group.FromCards(pc))
-	local g=pc:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
+	local pg=Duel.SelectMatchingCard(tp,c71614230.tgfilter,tp,LOCATION_PZONE,0,1,1,nil,tp)
+	if pg:GetCount()==0 then return end
+	local g=Duel.GetMatchingGroup(c71614230.gyfilter,tp,0,LOCATION_ONFIELD,nil,pg:GetFirst():GetColumnGroup())
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end

@@ -1,5 +1,4 @@
 --F.A. Dark Dragster
---Scripted by ahtelel
 function c6764709.initial_effect(c)
 	c:EnableReviveLimit()
 	--special summon
@@ -58,7 +57,7 @@ function c6764709.spcon(e,c)
 	local tp=c:GetControler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or Duel.IsExistingMatchingCard(c6764709.spfilter1,tp,LOCATION_MZONE,0,1,nil) then return false end
-	return Duel.IsExistingMatchingCard(c6764709.spfilter2,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c6764709.spfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c6764709.atkval(e,c)
 	return c:GetLevel()*300
@@ -75,7 +74,7 @@ function c6764709.lvop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(1)
 		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e4:SetRange(LOCATION_MZONE)
-		e4:SetReset(RESET_EVENT+0x1ff0000)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e4)
 	end
 end
@@ -94,7 +93,7 @@ function c6764709.rdop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
-	e1:SetReset(RESET_EVENT+0x1ff0000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	e1:SetValue(-3)
 	c:RegisterEffect(e1)
 	if tc and tc:IsRelateToEffect(e) then

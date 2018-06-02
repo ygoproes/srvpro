@@ -1,6 +1,4 @@
 --無限光アイン・ソフ・オウル
---Infinite Light
---Scripted by Eerie Code
 function c72883039.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -74,7 +72,7 @@ end
 function c72883039.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(72883039)==0 end
-	c:RegisterFlagEffect(72883039,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(72883039,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c72883039.spfilter(c,e,tp)
 	return c:IsSetCard(0x4a) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)

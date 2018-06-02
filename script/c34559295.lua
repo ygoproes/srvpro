@@ -1,6 +1,4 @@
 --アイアンドロー
---Iron Draw
---Script by mercury233
 function c34559295.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	--Activate

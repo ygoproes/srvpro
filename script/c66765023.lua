@@ -1,6 +1,4 @@
 --飛行エレファント
---Flying Elephant
---Scripted by Eerie Code
 function c66765023.initial_effect(c)
 	--indes
 	local e1=Effect.CreateEffect(c)
@@ -25,7 +23,7 @@ function c66765023.valcon(e,re,r,rp)
 	local res=false
 	if bit.band(r,REASON_EFFECT)~=0 and rp~=e:GetHandlerPlayer() then
 		res=true
-		e:GetHandler():RegisterFlagEffect(66765023,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(66765023,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 	return res
 end
@@ -42,13 +40,13 @@ function c66765023.effop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_BATTLE_DAMAGE)
 	e1:SetCondition(c66765023.wincon)
 	e1:SetOperation(c66765023.winop)
-	e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END+RESET_SELF_TURN)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN)
 	c:RegisterEffect(e1)
 end
 function c66765023.wincon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and Duel.GetAttackTarget()==nil
 end
 function c66765023.winop(e,tp,eg,ep,ev,re,r,rp)
-	local WIN_REASON_FLYING_ELEPHANT=0x1d
+	local WIN_REASON_FLYING_ELEPHANT=0x1e
 	Duel.Win(tp,WIN_REASON_FLYING_ELEPHANT)
 end

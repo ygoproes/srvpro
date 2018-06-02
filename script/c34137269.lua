@@ -1,6 +1,4 @@
 --時械神ハイロン
---Hairon, the Timelord
---Scripted by ahtelel
 function c34137269.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)

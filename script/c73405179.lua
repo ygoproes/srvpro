@@ -1,6 +1,4 @@
 --鉄の騎士
---Iron Knight
---Script by dest
 function c73405179.initial_effect(c)
 	--atk down
 	local e1=Effect.CreateEffect(c)

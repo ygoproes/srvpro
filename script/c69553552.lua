@@ -1,5 +1,4 @@
 --F.A. Winners
---Scripted by Eerie Code
 function c69553552.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -61,7 +60,7 @@ function c69553552.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 	if tc and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0
 		and tc:IsSetCard(0x107) and tc:IsType(TYPE_FIELD) then
-		tc:RegisterFlagEffect(69553552,RESET_EVENT+0x1fe0000,0,0)
+		tc:RegisterFlagEffect(69553552,RESET_EVENT+RESETS_STANDARD,0,0)
 	end
 end
 function c69553552.winfilter(c)

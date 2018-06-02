@@ -1,5 +1,4 @@
 --リトマスの死の剣士
---Lithmus Doom Swordsman
 function c72566043.initial_effect(c)
 	c:EnableReviveLimit()
 	--trap immunity

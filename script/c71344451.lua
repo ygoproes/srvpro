@@ -1,6 +1,4 @@
 --一撃必殺！居合いドロー
---Slash Draw
---Script by dest
 function c71344451.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

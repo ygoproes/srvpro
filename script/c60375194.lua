@@ -1,5 +1,4 @@
 --Vendread Daybreak
---Scripted by Eerie Code
 function c60375194.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -21,20 +20,19 @@ end
 function c60375194.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60375194.filter,tp,LOCATION_MZONE,0,1,nil) end
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount()-1,0,0)
 end
 function c60375194.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(tp,c60375194.filter,tp,LOCATION_MZONE,0,1,1,nil)
-	if #g==0 then return end
-	Duel.HintSelection(g)
-	local tc=Duel.GetFirstTarget()
-	local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,g)
-	if #dg~=0 then
-		Duel.Destroy(dg,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tc=Duel.SelectMatchingCard(tp,c60375194.filter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	if not tc then return end
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,tc)
+	if g:GetCount()>0 then
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
 end

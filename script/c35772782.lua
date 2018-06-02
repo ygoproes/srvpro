@@ -1,6 +1,4 @@
 --No.67 パラダイスマッシャー
---Number 67: Paradicesmasher
---Script by nekrozar
 function c35772782.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,5,2,nil,nil,99)
@@ -87,7 +85,7 @@ function c35772782.diceop(e,tp,eg,ep,ev,re,r,rp)
 	local cid=Duel.GetChainInfo(cc,CHAININFO_CHAIN_ID)
 	if c35772782[0]~=cid and Duel.SelectYesNo(tp,aux.Stringid(35772782,1)) then
 		Duel.Hint(HINT_CARD,0,35772782)
-		e:GetHandler():RegisterFlagEffect(35772782,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+		e:GetHandler():RegisterFlagEffect(35772782,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		local dc={Duel.GetDiceResult()}
 		local ac=1
 		local ct=bit.band(ev,0xff)+bit.rshift(ev,16)

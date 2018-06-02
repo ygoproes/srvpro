@@ -1,6 +1,4 @@
 --シュトロームベルクの金の城
---Golden Castle of Stromberg
---Script by dest
 function c72283691.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

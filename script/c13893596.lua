@@ -80,7 +80,7 @@ function c13893596.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
 		and c:IsRelateToEffect(e) and c:IsFaceup() then
-		tc:CreateRelation(c,RESET_EVENT+0x1fe0000)
+		tc:CreateRelation(c,RESET_EVENT+RESETS_STANDARD)
 	end
 end
 function c13893596.atkval(e,c)
@@ -92,7 +92,7 @@ end
 function c13893596.winop(e,tp,eg,ep,ev,re,r,rp)
 	local WIN_REASON_EXODIUS = 0x14
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c13893596.filter,tp,LOCATION_GRAVE,0,nil,aux.ExceptThisCard(e))
+	local g=Duel.GetMatchingGroup(c13893596.filter,tp,LOCATION_GRAVE,0,nil,c)
 	if g:GetClassCount(Card.GetCode)==5 then
 		Duel.Win(tp,WIN_REASON_EXODIUS)
 	end

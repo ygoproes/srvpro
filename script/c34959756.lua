@@ -1,6 +1,4 @@
 --リビング・フォッシル
---Living Fossil
---Script by dest
 function c34959756.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -59,7 +57,7 @@ function c34959756.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(c34959756.eqlimit)
 		e1:SetLabelObject(tc)
 		c:RegisterEffect(e1)
@@ -67,7 +65,7 @@ function c34959756.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+0x47e0000)
+		e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		e2:SetValue(LOCATION_REMOVED)
 		tc:RegisterEffect(e2)
 	end

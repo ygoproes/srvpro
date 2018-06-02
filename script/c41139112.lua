@@ -1,6 +1,4 @@
 --サモン・ダイス
---Summon Dice
---Scripted by Eerie Code
 function c41139112.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)

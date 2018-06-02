@@ -1,6 +1,4 @@
 --無限械アイン・ソフ
---Endless Emptiness
---Scripted by Eerie Code
 function c36894320.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -90,7 +88,7 @@ end
 function c36894320.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(36894320)==0 end
-	c:RegisterFlagEffect(36894320,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+	c:RegisterFlagEffect(36894320,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c36894320.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

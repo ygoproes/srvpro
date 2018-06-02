@@ -1,6 +1,4 @@
 --No.27 弩級戦艦－ドレッドノイド
---Number 27: Dreadnought Battleship Dreadnoid
---Script by dest
 function c8387138.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
@@ -34,7 +32,7 @@ function c8387138.initial_effect(c)
 end
 c8387138.xyz_number=27
 function c8387138.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(8387138,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_BATTLE,0,1)
+	e:GetHandler():RegisterFlagEffect(8387138,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 end
 function c8387138.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(8387138)~=0

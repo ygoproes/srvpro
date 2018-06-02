@@ -27,7 +27,6 @@ function c5641251.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_CONFIRM)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1)
 	e3:SetCondition(c5641251.lvlcon)
 	e3:SetOperation(c5641251.lvlop)
 	c:RegisterEffect(e3)
@@ -48,16 +47,6 @@ function c5641251.acttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			return
 		end
 	end
-	if Duel.CheckEvent(EVENT_BATTLE_CONFIRM) then
-		if c5641251.lvlcon(e,tp,eg,ep,ev,re,r,rp)
-			and Duel.SelectYesNo(tp,94) then
-			e:SetCategory(CATEGORY_LVCHANGE+CATEGORY_DESTROY)
-			e:SetProperty(0)
-			e:SetOperation(c5641251.lvlop)
-			e:GetHandler():RegisterFlagEffect(0,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,65)
-			return
-		end
-	end
 	e:SetCategory(0)
 	e:SetProperty(0)
 	e:SetOperation(nil)
@@ -73,14 +62,12 @@ function c5641251.spfilter(c,e,tp)
 	return c:IsSetCard(0x107) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c5641251.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c5641251.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c5641251.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)~=0 then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c5641251.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
@@ -88,10 +75,6 @@ function c5641251.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-
-
-
-
 function c5641251.lvlcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()
@@ -100,7 +83,8 @@ function c5641251.lvlcon(e,tp,eg,ep,ev,re,r,rp)
 	return bc:IsFaceup() and tc:IsFaceup() and tc:IsSetCard(0x107)
 end
 function c5641251.lvlop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	local tc=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()
 	if not bc then return false end
@@ -111,10 +95,10 @@ function c5641251.lvlop(e,tp,eg,ep,ev,re,r,rp)
 		d1,d2=Duel.TossDice(tp,1,1)
 	end
 	if d1>d2 then
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e1:SetValue(4)
 		tc:RegisterEffect(e1)
 	else

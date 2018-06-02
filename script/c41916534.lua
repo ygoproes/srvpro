@@ -1,6 +1,4 @@
 --鉄のハンス
---Iron Hans
---Script by dest
 function c41916534.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)

@@ -1,6 +1,4 @@
 --シンデレラ
---Cinderella
---Script by dest
 function c78527720.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

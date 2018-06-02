@@ -1,6 +1,4 @@
 --サクリファイス・アニマ
---Relinquished Anima
---Script by dest
 function c94259633.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -58,12 +56,12 @@ end
 function c94259633.equip_monster(c,tp,tc)
 	if not Duel.Equip(tp,tc,c,false) then return end
 	--Add Equip limit
-	tc:RegisterFlagEffect(94259633,RESET_EVENT+0x1fe0000,0,0)
+	tc:RegisterFlagEffect(94259633,RESET_EVENT+RESETS_STANDARD,0,0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 	e1:SetCode(EFFECT_EQUIP_LIMIT)
-	e1:SetReset(RESET_EVENT+0x1fe0000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e1:SetValue(c94259633.eqlimit)
 	tc:RegisterEffect(e1)
 end

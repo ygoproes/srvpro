@@ -1,14 +1,14 @@
 --Vendread Anima
---scripted by Naim
 function c70491682.initial_effect(c)
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(70491682,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCost(aux.bfgcost)
 	e1:SetCountLimit(1,70491682)
+	e1:SetCost(aux.bfgcost)
 	e1:SetTarget(c70491682.sptg)
 	e1:SetOperation(c70491682.spop)
 	c:RegisterEffect(e1)
@@ -22,31 +22,32 @@ function c70491682.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c70491682.spfilter(c,e,tp)
-	return c:IsSetCard(0x106) and not c:IsCode(70491682) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)
+	return c:IsFaceup() and c:IsSetCard(0x106) and not c:IsCode(70491682) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c70491682.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and c70491682.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c70491682.spfilter,tp,LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c70491682.spfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c70491682.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg=Duel.SelectTarget(tp,c70491682.spfilter,tp,LOCATION_REMOVED,0,1,1,e:GetHandler(),e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tg,1,0,0)
+	local g=Duel.SelectTarget(tp,c70491682.spfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c70491682.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c70491682.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function c70491682.splimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
+	return c:GetRace()~=RACE_ZOMBIE
 end
 function c70491682.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return r==REASON_RITUAL and e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
@@ -59,19 +60,18 @@ function c70491682.mtop(e,tp,eg,ep,ev,re,r,rp)
 	if not rc then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_BATTLE_DESTROY_REDIRECT)
 	e1:SetValue(LOCATION_REMOVED)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
 	if not rc:IsType(TYPE_EFFECT) then
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_ADD_TYPE)
 		e2:SetValue(TYPE_EFFECT)
-		e2:SetReset(RESET_EVENT+0x1fe0000)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		rc:RegisterEffect(e2,true)
 	end
-	rc:RegisterFlagEffect(0,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(70491682,1))
+	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(70491682,1))
 	Duel.RegisterFlagEffect(tp,70491682,RESET_PHASE+PHASE_END,0,1)
 end

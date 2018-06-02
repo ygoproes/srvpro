@@ -1,5 +1,4 @@
 --Revendread Evolution
---Script by dest
 function c7986397.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -101,7 +100,7 @@ function c7986397.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 		tc:CompleteProcedure()
-		tc:RegisterFlagEffect(7986397,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,2)
+		tc:RegisterFlagEffect(7986397,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
