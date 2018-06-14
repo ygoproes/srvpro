@@ -8,7 +8,6 @@ function c24731391.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(1,0)
-	e1:SetLabel(tp)
 	e1:SetValue(c24731391.val)
 	c:RegisterEffect(e1)
 	--target
@@ -49,12 +48,7 @@ function c24731391.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c24731391.val(e,re,dam,r,rp,rc)
-	if bit.band(r,REASON_BATTLE)>0 then return dam end
-	if bit.band(r,REASON_EFFECT)~=0 or bit.band(r,REASON_BATTLE)~=0 then
-		return dam/2
-	else
-		return dam
-	end
+	return dam/2
 end
 function c24731391.filter(c)
 	return c:IsType(TYPE_LINK)
@@ -78,7 +72,7 @@ function c24731391.thfilter(c)
 end
 function c24731391.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_EFFECT) and rp~=tp and c:GetPreviousControler()==tp
+	return c:IsReason(REASON_EFFECT) and rp==1-tp and c:GetPreviousControler()==tp
 end
 function c24731391.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c24731391.thfilter,tp,LOCATION_DECK,0,1,nil) end

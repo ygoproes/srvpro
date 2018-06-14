@@ -1021,8 +1021,7 @@ function Auxiliary.AddFusionProcMix(c,sub,insf,...)
 		end
 	end
 	if #mat>0 and c.material_count==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.material_count=#mat
 		mt.material=mat
 	end
@@ -1132,8 +1131,7 @@ function Auxiliary.AddFusionProcMixRep(c,sub,insf,fun1,minc,maxc,...)
 		end
 	end
 	if #mat>0 and c.material_count==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.material_count=#mat
 		mt.material=mat
 	end
@@ -1315,8 +1313,7 @@ function Auxiliary.AddFusionProcCodeRep(c,code1,cc,sub,insf)
 		code[i]=code1
 	end
 	if c.material_count==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.material_count=1
 		mt.material={code1}
 	end
@@ -1519,8 +1516,7 @@ function Auxiliary.RPGOperation(filter)
 end
 function Auxiliary.AddRitualProcGreaterCode(c,code1)
 	if not c:IsStatus(STATUS_COPYING_EFFECT) and c.fit_monster==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.fit_monster={code1}
 	end
 	Auxiliary.AddRitualProcGreater(c,Auxiliary.FilterBoolFunction(Card.IsCode,code1))
@@ -1591,8 +1587,7 @@ function Auxiliary.RPEOperation(filter)
 end
 function Auxiliary.AddRitualProcEqualCode(c,code1)
 	if not c:IsStatus(STATUS_COPYING_EFFECT) and c.fit_monster==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.fit_monster={code1}
 	end
 	Auxiliary.AddRitualProcEqual(c,Auxiliary.FilterBoolFunction(Card.IsCode,code1))
@@ -1663,16 +1658,14 @@ function Auxiliary.RPEOperation2(filter)
 end
 function Auxiliary.AddRitualProcEqual2Code(c,code1)
 	if not c:IsStatus(STATUS_COPYING_EFFECT) and c.fit_monster==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.fit_monster={code1}
 	end
 	Auxiliary.AddRitualProcEqual2(c,Auxiliary.FilterBoolFunction(Card.IsCode,code1))
 end
 function Auxiliary.AddRitualProcEqual2Code2(c,code1,code2)
 	if not c:IsStatus(STATUS_COPYING_EFFECT) and c.fit_monster==nil then
-		local code=c:GetOriginalCode()
-		local mt=_G["c" .. code]
+		local mt=getmetatable(c)
 		mt.fit_monster={code1,code2}
 	end
 	Auxiliary.AddRitualProcEqual2(c,Auxiliary.FilterBoolFunction(Card.IsCode,code1,code2))
@@ -1802,8 +1795,7 @@ end
 function Auxiliary.EnableReviveLimitPendulumSummonable(c, loc)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
 	c:EnableReviveLimit()
-	local code=c:GetOriginalCode()
-	local mt=_G["c" .. code]
+	local mt=getmetatable(c)
 	if loc==nil then loc=0xff end
 	mt.psummonable_location=loc
 	--complete procedure on pendulum summon success
@@ -1839,18 +1831,35 @@ function Auxiliary.AddLinkProcedure(c,f,min,max,gf)
 	c:RegisterEffect(e1)
 end
 function Auxiliary.LConditionFilter(c,f,lc)
-	return c:IsFaceup() and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
+	if c:IsLocation(LOCATION_HAND) and not c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL) then return false end
+	if c:IsLocation(LOCATION_MZONE) and not c:IsFaceup() then return false end
+	return c:IsCanBeLinkMaterial(lc) and (not f or f(c))
 end
 function Auxiliary.GetLinkCount(c)
 	if c:IsType(TYPE_LINK) and c:GetLink()>1 then
 		return 1+0x10000*c:GetLink()
 	else return 1 end
 end
+function Auxiliary.LCheckOtherMaterial(c,mg,lc)
+	local le=c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL)
+	if not le then return true end
+	local f=le:GetValue()
+	return f(nil,lc,mg)
+end
+function Auxiliary.LCheckMaterialCompatibility(sg,lc)
+	for tc in Auxiliary.Next(sg) do
+		local mg=sg:Clone()
+		mg:RemoveCard(tc)
+		if not Auxiliary.LCheckOtherMaterial(tc,mg,lc) then return false end
+	end
+	return true
+end
 function Auxiliary.LCheckRecursive(c,tp,sg,mg,lc,ct,minc,maxc,gf)
 	sg:AddCard(c)
 	ct=ct+1
-	local res=Auxiliary.LCheckGoal(tp,sg,lc,minc,ct,gf)
-		or (ct<maxc and mg:IsExists(Auxiliary.LCheckRecursive,1,sg,tp,sg,mg,lc,ct,minc,maxc,gf))
+	local res=Auxiliary.LCheckMaterialCompatibility(sg,lc)
+		and (Auxiliary.LCheckGoal(tp,sg,lc,minc,ct,gf)
+			or ct<maxc and mg:IsExists(Auxiliary.LCheckRecursive,1,sg,tp,sg,mg,lc,ct,minc,maxc,gf))
 	sg:RemoveCard(c)
 	ct=ct-1
 	return res
@@ -1863,7 +1872,7 @@ function Auxiliary.LinkCondition(f,minc,maxc,gf)
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp=c:GetControler()
-				local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,c)
+				local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,f,c)
 				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
 				if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				local ct=sg:GetCount()
@@ -1874,7 +1883,7 @@ function Auxiliary.LinkCondition(f,minc,maxc,gf)
 end
 function Auxiliary.LinkTarget(f,minc,maxc,gf)
 	return	function(e,tp,eg,ep,ev,re,r,rp,chk,c)
-				local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,c)
+				local mg=Duel.GetMatchingGroup(Auxiliary.LConditionFilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,f,c)
 				local bg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
 				if #bg>0 then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
@@ -1977,7 +1986,7 @@ end
 --condition of EVENT_TO_GRAVE + destroyed_by_opponent_from_field
 function Auxiliary.dogcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetPreviousControler()==tp and c:IsReason(REASON_DESTROY) and rp~=tp
+	return c:GetPreviousControler()==tp and c:IsReason(REASON_DESTROY) and rp==1-tp
 end
 --condition of "except the turn this card was sent to the Graveyard"
 function Auxiliary.exccon(e)
@@ -2262,8 +2271,6 @@ function Auxiliary.EquipByEffectAndLimitRegister(c,e,tp,tc,code,mustbefaceup)
 	return true
 end
 
-
-
 ---utility entry for SelectUnselect loops
 --returns bool if chk==0, returns Group if chk==1
 function Auxiliary.SelectUnselectLoop(c,sg,mg,e,tp,minc,maxc,rescon)
@@ -2301,7 +2308,6 @@ function Auxiliary.SelectUnselectGroup(g,e,tp,minc,maxc,rescon,chk,seltp,hintmsg
 	end
 	return sg
 end
-
 
 --Utilities to be added to the core
 function Group.Includes(g1,g2)
